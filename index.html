@@ -1,102 +1,146 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="th">
+<head>
     <title>ฟอร์มบันทึกการเดินทาง</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-      .container { margin-top: 30px; }
-      #success-message, #error-message { display: none; }
+        body {
+            background-color: #f4f7f6;
+        }
+        .container {
+            max-width: 600px; /* จำกัดความกว้างสูงสุดบนจอใหญ่ */
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            text-align: center;
+        }
+        .btn-group-custom {
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn-group-custom .btn {
+            flex-grow: 1;
+            margin: 0 5px;
+        }
+        #success-message, #error-message {
+            display: none;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="container">
-      <h2>ฟอร์มบันทึกการเดินทาง</h2>
-      <form id="trip-form">
-        <div class="form-group">
-            <label for="car-number">เบอร์รถ</label>
-            <input type="text" class="form-control" id="car-number" required>
-        </div>
-        <div class="form-group">
-            <label for="origin-station">จุดต้นทาง</label>
-            <input type="text" class="form-control" id="origin-station" value="คลังแม่กลอง" readonly>
-        </div>
-        <div class="form-group">
-            <label for="station1">สถานีที่ 1</label>
-            <input type="text" class="form-control" id="station1" list="station-list" required autocomplete="off">
-        </div>
-        <div class="form-group">
-            <label for="station2">สถานีที่ 2</label>
-            <input type="text" class="form-control" id="station2" list="station-list" required autocomplete="off">
-        </div>
-        <datalist id="station-list"></datalist>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="fas fa-truck"></i> บันทึกการเดินทาง</h3>
+            </div>
+            <div class="card-body">
+                <form id="trip-form">
+                    <div class="form-group">
+                        <label for="car-number"><strong>เบอร์รถ</strong></label>
+                        <input type="text" class="form-control" id="car-number" placeholder="เช่น กข-1234" required>
+                    </div>
+                    
+                    <hr>
 
-        <button type="submit" class="btn btn-primary" id="submit-button">บันทึกข้อมูล</button>
-      </form>
-      <div id="success-message" class="alert alert-success mt-3">บันทึกข้อมูลเรียบร้อยแล้ว!</div>
-      <div id="error-message" class="alert alert-danger mt-3">เกิดข้อผิดพลาด!</div>
+                    <div class="form-group">
+                        <label for="origin-station"><i class="fas fa-warehouse"></i> <strong>จุดต้นทาง</strong></label>
+                        <input type="text" class="form-control" id="origin-station" value="คลังแม่กลอง" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="station1"><i class="fas fa-map-marker-alt"></i> <strong>สถานีที่ 1</strong></label>
+                        <input type="text" class="form-control" id="station1" list="station-list" placeholder="พิมพ์เพื่อค้นหาสถานี..." required autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="station2"><i class="fas fa-map-marker-alt"></i> <strong>สถานีที่ 2</strong></label>
+                        <input type="text" class="form-control" id="station2" list="station-list" placeholder="พิมพ์เพื่อค้นหาสถานี..." required autocomplete="off">
+                    </div>
+                    
+                    <datalist id="station-list"></datalist>
+                    
+                    <hr>
+
+                    <div class="btn-group-custom mt-4">
+                        <button type="reset" class="btn btn-secondary"><i class="fas fa-undo"></i> ล้างข้อมูล</button>
+                        <button type="submit" class="btn btn-primary" id="submit-button"><i class="fas fa-save"></i> บันทึกข้อมูล</button>
+                    </div>
+                </form>
+
+                <div id="success-message" class="alert alert-success mt-3"><i class="fas fa-check-circle"></i> บันทึกข้อมูลเรียบร้อยแล้ว!</div>
+                <div id="error-message" class="alert alert-danger mt-3"><i class="fas fa-exclamation-triangle"></i> เกิดข้อผิดพลาด!</div>
+            </div>
+        </div>
     </div>
 
     <script>
-      // ---- แก้ไขจุดนี้: วาง URL ของ Web App ที่คัดลอกมา ----
-      const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwOCmQ0X4AMyrzaRElSOlRNNtgxZ3hz-S2RmD6XoCT3XorVI49g-OIjZY7Mcr9Etu8m/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwOCmQ0X4AMyrzaRElSOlRNNtgxZ3hz-S2RmD6XoCT3XorVI49g-OIjZY7Mcr9Etu8m/exec";
 
-      // 1. ดึงรายชื่อสถานีเมื่อเปิดหน้าเว็บ
-      document.addEventListener("DOMContentLoaded", () => {
-        fetch(WEB_APP_URL + "?action=getStations")
-          .then(response => response.json())
-          .then(stations => {
-            const dataList = document.getElementById("station-list");
-            stations.forEach(station => {
-              const option = document.createElement('option');
-              option.value = station;
-              dataList.appendChild(option);
-            });
-          })
-          .catch(error => console.error('Error fetching stations:', error));
-      });
-      
-      // 2. ส่งข้อมูลเมื่อกดปุ่มบันทึก
-      const form = document.getElementById("trip-form");
-      const submitButton = document.getElementById("submit-button");
-      const successMessage = document.getElementById("success-message");
-      const errorMessage = document.getElementById("error-message");
-
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        submitButton.disabled = true; // ปิดปุ่มชั่วคราว
-        submitButton.innerText = "กำลังบันทึก...";
-
-        const formData = {
-          carNumber: document.getElementById("car-number").value,
-          station1: document.getElementById("station1").value,
-          station2: document.getElementById("station2").value
-        };
-
-        fetch(WEB_APP_URL, {
-          method: 'POST',
-          body: JSON.stringify(formData),
-          headers: { 'Content-Type': 'application/json' },
-          mode: 'no-cors' // 'no-cors' เป็น trick สำหรับ Apps Script doPost แบบง่าย
-        })
-        .then(() => {
-            // สำคัญ: no-cors ทำให้เราไม่ได้รับ response กลับมา
-            // จึงต้องสมมติว่าสำเร็จเสมอ แล้วแสดงผลเลย
-            form.reset();
-            successMessage.style.display = 'block';
-            setTimeout(() => successMessage.style.display = 'none', 3000);
-        })
-        .catch(error => {
-            errorMessage.style.display = 'block';
-            setTimeout(() => errorMessage.style.display = 'none', 3000);
-            console.error('Error:', error);
-        })
-        .finally(() => {
-            submitButton.disabled = false; // เปิดปุ่มให้ใช้งานอีกครั้ง
-            submitButton.innerText = "บันทึกข้อมูล";
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch(WEB_APP_URL + "?action=getStations")
+                .then(response => response.json())
+                .then(stations => {
+                    const dataList = document.getElementById("station-list");
+                    stations.forEach(station => {
+                        const option = document.createElement('option');
+                        option.value = station;
+                        dataList.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching stations:', error));
         });
-      });
+        
+        const form = document.getElementById("trip-form");
+        const submitButton = document.getElementById("submit-button");
+        const successMessage = document.getElementById("success-message");
+        const errorMessage = document.getElementById("error-message");
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+
+            const formData = {
+                carNumber: document.getElementById("car-number").value,
+                station1: document.getElementById("station1").value,
+                station2: document.getElementById("station2").value
+            };
+
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify(formData),
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors'
+            })
+            .then(() => {
+                form.reset();
+                document.getElementById("origin-station").value = "คลังแม่กลอง"; // คืนค่าให้ช่อง readonly
+                successMessage.style.display = 'block';
+                setTimeout(() => successMessage.style.display = 'none', 3000);
+            })
+            .catch(error => {
+                errorMessage.style.display = 'block';
+                setTimeout(() => errorMessage.style.display = 'none', 3000);
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-save"></i> บันทึกข้อมูล';
+            });
+        });
     </script>
-  </body>
+</body>
 </html>
