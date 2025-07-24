@@ -4,6 +4,10 @@
     <title>ฟอร์มบันทึกการเดินทาง</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
@@ -11,14 +15,13 @@
             background-color: #f4f7f6;
         }
         .container {
-            max-width: 600px; /* จำกัดความกว้างสูงสุดบนจอใหญ่ */
-            margin-top: 50px;
-            margin-bottom: 50px;
+            max-width: 600px;
+            margin: 30px auto;
         }
         .card {
             border: none;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px_15px rgba(0,0,0,0.1);
         }
         .card-header {
             background-color: #007bff;
@@ -27,16 +30,15 @@
             border-top-right-radius: 15px;
             text-align: center;
         }
-        .btn-group-custom {
-            display: flex;
-            justify-content: space-between;
+        /* Style สำหรับ Choices.js */
+        .choices__inner {
+            border-radius: .25rem;
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            background-color: #fff;
         }
-        .btn-group-custom .btn {
-            flex-grow: 1;
-            margin: 0 5px;
-        }
-        #success-message, #error-message {
-            display: none;
+        .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            background-color: #007bff;
         }
     </style>
 </head>
@@ -56,32 +58,30 @@
                     <hr>
 
                     <div class="form-group">
-                        <label for="origin-station"><i class="fas fa-warehouse"></i> <strong>จุดต้นทาง</strong></label>
-                        <input type="text" class="form-control" id="origin-station" value="คลังแม่กลอง" readonly>
+                        <label><i class="fas fa-warehouse"></i> <strong>จุดต้นทาง</strong></label>
+                        <input type="text" class="form-control" value="คลังแม่กลอง" readonly>
                     </div>
-
+                    
                     <div class="form-group">
                         <label for="station1"><i class="fas fa-map-marker-alt"></i> <strong>สถานีที่ 1</strong></label>
-                        <input type="text" class="form-control" id="station1" list="station-list" placeholder="พิมพ์เพื่อค้นหาสถานี..." required autocomplete="off">
+                        <select id="station1" class="form-control" required></select>
                     </div>
 
                     <div class="form-group">
                         <label for="station2"><i class="fas fa-map-marker-alt"></i> <strong>สถานีที่ 2</strong></label>
-                        <input type="text" class="form-control" id="station2" list="station-list" placeholder="พิมพ์เพื่อค้นหาสถานี..." required autocomplete="off">
+                        <select id="station2" class="form-control" required></select>
                     </div>
-                    
-                    <datalist id="station-list"></datalist>
                     
                     <hr>
 
-                    <div class="btn-group-custom mt-4">
-                        <button type="reset" class="btn btn-secondary"><i class="fas fa-undo"></i> ล้างข้อมูล</button>
-                        <button type="submit" class="btn btn-primary" id="submit-button"><i class="fas fa-save"></i> บันทึกข้อมูล</button>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="reset" class="btn btn-secondary flex-grow-1 mx-1"><i class="fas fa-undo"></i> ล้างข้อมูล</button>
+                        <button type="submit" class="btn btn-primary flex-grow-1 mx-1" id="submit-button"><i class="fas fa-save"></i> บันทึกข้อมูล</button>
                     </div>
                 </form>
 
-                <div id="success-message" class="alert alert-success mt-3"><i class="fas fa-check-circle"></i> บันทึกข้อมูลเรียบร้อยแล้ว!</div>
-                <div id="error-message" class="alert alert-danger mt-3"><i class="fas fa-exclamation-triangle"></i> เกิดข้อผิดพลาด!</div>
+                <div id="success-message" class="alert alert-success mt-3" style="display: none;"><i class="fas fa-check-circle"></i> บันทึกข้อมูลเรียบร้อยแล้ว!</div>
+                <div id="error-message" class="alert alert-danger mt-3" style="display: none;"><i class="fas fa-exclamation-triangle"></i> เกิดข้อผิดพลาด!</div>
             </div>
         </div>
     </div>
@@ -89,36 +89,55 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwOCmQ0X4AMyrzaRElSOlRNNtgxZ3hz-S2RmD6XoCT3XorVI49g-OIjZY7Mcr9Etu8m/exec";
 
+        // 3. ปรับปรุง Javascript ให้ใช้ Choices.js
+        const station1Select = document.getElementById("station1");
+        const station2Select = document.getElementById("station2");
+        
+        // ตั้งค่าเริ่มต้นสำหรับ Choices.js
+        const choicesConfig = {
+            searchPlaceholderValue: "พิมพ์เพื่อค้นหา...",
+            removeItemButton: false,
+            itemSelectText: 'กดเพื่อเลือก',
+        };
+
+        const choices1 = new Choices(station1Select, choicesConfig);
+        const choices2 = new Choices(station2Select, choicesConfig);
+
+        // ดึงรายชื่อสถานีเมื่อเปิดหน้าเว็บ
         document.addEventListener("DOMContentLoaded", () => {
+            choices1.clearStore();
+            choices2.clearStore();
+            choices1.setChoices([{ value: '', label: 'กำลังโหลดสถานี...' }], 'value', 'label', false);
+            choices2.setChoices([{ value: '', label: 'กำลังโหลดสถานี...' }], 'value', 'label', false);
+
             fetch(WEB_APP_URL + "?action=getStations")
                 .then(response => response.json())
                 .then(stations => {
-                    const dataList = document.getElementById("station-list");
-                    stations.forEach(station => {
-                        const option = document.createElement('option');
-                        option.value = station;
-                        dataList.appendChild(option);
-                    });
+                    const stationChoices = stations.map(station => ({ value: station, label: station }));
+                    choices1.clearStore();
+                    choices2.clearStore();
+                    choices1.setChoices(stationChoices, 'value', 'label', false);
+                    choices2.setChoices(stationChoices, 'value', 'label', false);
                 })
-                .catch(error => console.error('Error fetching stations:', error));
+                .catch(error => {
+                    console.error('Error fetching stations:', error);
+                    choices1.clearStore();
+                    choices1.setChoices([{ value: '', label: 'โหลดข้อมูลล้มเหลว' }], 'value', 'label', false);
+                });
         });
         
         const form = document.getElementById("trip-form");
-        const submitButton = document.getElementById("submit-button");
-        const successMessage = document.getElementById("success-message");
-        const errorMessage = document.getElementById("error-message");
-
         form.addEventListener("submit", (e) => {
             e.preventDefault();
+            // ... (ส่วนของการ submit เหมือนเดิม) ...
+            const submitButton = document.getElementById("submit-button");
             submitButton.disabled = true;
             submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
-
             const formData = {
                 carNumber: document.getElementById("car-number").value,
-                station1: document.getElementById("station1").value,
-                station2: document.getElementById("station2").value
+                station1: station1Select.value,
+                station2: station2Select.value
             };
-
             fetch(WEB_APP_URL, {
                 method: 'POST',
                 body: JSON.stringify(formData),
@@ -127,15 +146,12 @@
             })
             .then(() => {
                 form.reset();
-                document.getElementById("origin-station").value = "คลังแม่กลอง"; // คืนค่าให้ช่อง readonly
-                successMessage.style.display = 'block';
-                setTimeout(() => successMessage.style.display = 'none', 3000);
+                choices1.clearInput();
+                choices2.clearInput();
+                document.getElementById("success-message").style.display = 'block';
+                setTimeout(() => document.getElementById("success-message").style.display = 'none', 3000);
             })
-            .catch(error => {
-                errorMessage.style.display = 'block';
-                setTimeout(() => errorMessage.style.display = 'none', 3000);
-                console.error('Error:', error);
-            })
+            .catch(error => console.error('Error:', error))
             .finally(() => {
                 submitButton.disabled = false;
                 submitButton.innerHTML = '<i class="fas fa-save"></i> บันทึกข้อมูล';
