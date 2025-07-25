@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <title>ลงทะเบียนรับการแจ้งเตือน</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body { background-color: #f4f7f6; }
+        .container { max-width: 500px; margin: 50px auto; text-align: center; }
+        .card { border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .card-body { padding: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <i class="fas fa-user-plus fa-3x text-success mb-3"></i>
+                <h3>ลงทะเบียนรับการแจ้งเตือน</h3>
+                <p class="text-muted">กรุณาเลือกสถานีและเข้าสู่ระบบด้วย Telegram เพื่อบันทึก Chat ID ของท่าน</p>
+
+                <div class="form-group text-left mt-4">
+                    <label for="stationSelect"><strong>เลือกสถานีของคุณ</strong></label>
+                    <select id="stationSelect" class="form-control" required>
+                        <option value="">-- กรุณาเลือกสถานี --</option>
+                    </select>
+                </div>
+
+                <div id="telegram-login-container" class="mt-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const REGISTRATION_API_URL = "YOUR_REGISTRATION_WEB_APP_URL"; // <--- URL จากโปรเจกต์ที่ 2
+        const BOT_USERNAME = "YOUR_BOT_USERNAME"; // <--- Username ของบอท (ไม่มี @)
+
+        const stationSelect = document.getElementById('stationSelect');
+        const loginContainer = document.getElementById('telegram-login-container');
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch(REGISTRATION_API_URL + "?action=getStations")
+                .then(response => response.json())
+                .then(stations => {
+                    stations.forEach(station => {
+                        const option = new Option(station, station);
+                        stationSelect.add(option);
+                    });
+                });
+        });
+
+        stationSelect.addEventListener('change', () => {
+            const selectedStation = stationSelect.value;
+            loginContainer.innerHTML = '';
+
+            if (selectedStation) {
+                const redirectUrl = `${REGISTRATION_API_URL}?action=register&station=${encodeURIComponent(selectedStation)}`;
+
+                const script = document.createElement('script');
+                script.async = true;
+                script.src = 'https://telegram.org/js/telegram-widget.js?22';
+                script.setAttribute('data-telegram-login', BOT_USERNAME);
+                script.setAttribute('data-size', 'large');
+                script.setAttribute('data-auth-url', redirectUrl);
+                script.setAttribute('data-request-access', 'write');
+                loginContainer.appendChild(script);
+            }
+        });
+    </script>
+</body>
+</html>
