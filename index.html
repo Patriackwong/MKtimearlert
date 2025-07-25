@@ -10,31 +10,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
     
     <style>
-        body {
-            background-color: #f4f7f6;
-        }
-        .container {
-            max-width: 600px;
-            margin: 30px auto;
-        }
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .card-header {
-            background-color: #28a745; /* Green */
-            color: white;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-            text-align: center;
-        }
-        .choices__list--dropdown .choices__item--selectable.is-highlighted {
-            background-color: #28a745; /* Green */
-        }
-        .modal-content {
-            border-radius: 15px;
-        }
+        body { background-color: #f4f7f6; }
+        .container { max-width: 600px; margin: 30px auto; }
+        .card { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .card-header { background-color: #28a745; color: white; border-top-left-radius: 15px; border-top-right-radius: 15px; text-align: center; }
+        .choices__list--dropdown .choices__item--selectable.is-highlighted { background-color: #28a745; }
+        .modal-content { border-radius: 15px; }
     </style>
 </head>
 <body>
@@ -52,7 +33,20 @@
                     <hr>
                     <div class="form-group">
                         <label><i class="fas fa-warehouse"></i> <strong>จุดต้นทาง</strong></label>
-                        <input type="text" class="form-control" value="คลังแม่กลอง" readonly>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="origin" id="origin1" value="คลังแม่กลอง" checked required>
+                                <label class="form-check-label" for="origin1">คลังแม่กลอง</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="origin" id="origin2" value="IRPC พระประแดง">
+                                <label class="form-check-label" for="origin2">IRPC พระประแดง</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="origin" id="origin3" value="ไทยออยล์ ศรีราชา">
+                                <label class="form-check-label" for="origin3">ไทยออยล์ ศรีราชา</label>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="station1"><i class="fas fa-map-marker-alt"></i> <strong>สถานีที่ 1</strong></label>
@@ -138,7 +132,9 @@
             $('#successState').hide();
             modal.modal('show');
 
+            const selectedOrigin = document.querySelector('input[name="origin"]:checked').value;
             const formData = {
+                origin: selectedOrigin,
                 carNumber: document.getElementById("car-number").value,
                 station1: station1Select.value,
                 station2: station2Select.value,
@@ -161,12 +157,12 @@
                 setTimeout(() => {
                     modal.modal('hide');
                     form.reset();
-                    choices1.clearInput();
-                    choices2.clearInput();
-                    choices3.clearInput();
-                    choices1.setChoiceByValue('');
-                    choices2.setChoiceByValue('');
-                    choices3.setChoiceByValue('');
+                    // ตั้งค่า Radio button กลับไปที่ค่าเริ่มต้น
+                    document.getElementById('origin1').checked = true;
+                    // รีเซ็ต Choices.js
+                    choices1.clearInput(); choices1.setChoiceByValue('');
+                    choices2.clearInput(); choices2.setChoiceByValue('');
+                    choices3.clearInput(); choices3.setChoiceByValue('');
                 }, 2500);
             })
             .catch(error => {
