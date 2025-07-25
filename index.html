@@ -57,8 +57,8 @@
                         <select id="station2" class="form-control" required></select>
                     </div>
                     <div class="form-group">
-                        <label for="station3"><i class="fas fa-map-marker-alt"></i> <strong>สถานีที่ 3</strong></label>
-                        <select id="station3" class="form-control" required></select>
+                        <label for="station3"><i class="fas fa-map-marker-alt"></i> <strong>สถานีที่ 3 (ถ้ามี)</strong></label>
+                        <select id="station3" class="form-control"></select>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between mt-4">
@@ -157,9 +157,7 @@
                 setTimeout(() => {
                     modal.modal('hide');
                     form.reset();
-                    // ตั้งค่า Radio button กลับไปที่ค่าเริ่มต้น
                     document.getElementById('origin1').checked = true;
-                    // รีเซ็ต Choices.js
                     choices1.clearInput(); choices1.setChoiceByValue('');
                     choices2.clearInput(); choices2.setChoiceByValue('');
                     choices3.clearInput(); choices3.setChoiceByValue('');
