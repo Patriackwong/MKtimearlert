@@ -8,65 +8,118 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body { background-color: #f8f9fa; }
-        .container { max-width: 550px; margin: 40px auto; }
+        .container { max-width: 600px; margin: 40px auto; }
         .card { border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border: none; }
         .card-header { background: linear-gradient(45deg, #28a745, #218838); color: white; border-top-left-radius: 15px; border-top-right-radius: 15px; text-align: center; padding: 1.5rem; }
         .card-body { padding: 2rem; }
-        .step { margin-bottom: 2rem; }
-        .step-icon { font-size: 2rem; color: #28a745; margin-bottom: 0.5rem; }
-        .step-title { font-weight: bold; }
-        .download-buttons .btn { margin: 5px; }
-        #telegram-login-container { display: none; } /* ซ่อนปุ่ม Login ไว้ก่อน */
+        .step { display: flex; align-items: flex-start; margin-bottom: 2rem; }
+        .step-number { font-size: 1.5rem; font-weight: bold; color: #28a745; background-color: #e9f5ea; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0; }
+        .step-content { text-align: left; }
+        .step-content h5 { font-weight: bold; }
+        .modal-body .list-group-item { border: none; padding-left: 0; }
+        .modal-body .list-group-item i { color: #28a745; width: 20px; text-align: center; margin-right: 10px; }
+        #telegram-login-container { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
             <div class="card-header">
-                <h2 class="mb-0"><i class="fas fa-user-plus"></i> ลงทะเบียนรับการแจ้งเตือน</h2>
+                <h2 class="mb-0"><i class="fas fa-user-plus"></i> คู่มือการลงทะเบียน</h2>
             </div>
             <div class="card-body">
                 
-                <div class="text-center mb-4">
-                    <p class="text-muted">หากยังไม่มีแอป Telegram สามารถดาวน์โหลดได้ที่นี่</p>
-                    <div class="download-buttons">
-                        <a href="https://apps.apple.com/app/telegram-messenger/id686449807" target="_blank" class="btn btn-outline-dark"><i class="fab fa-apple"></i> App Store</a>
-                        <a href="https://play.google.com/store/apps/details?id=org.telegram.messenger" target="_blank" class="btn btn-outline-success"><i class="fab fa-google-play"></i> Google Play</a>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h5>ติดตั้งและสมัคร Telegram</h5>
+                        <p class="text-muted">หากยังไม่เคยใช้งาน Telegram กรุณาติดตั้งและสมัครสมาชิกให้เรียบร้อยก่อน</p>
+                        <div>
+                            <button type="button" class="btn btn-sm btn-outline-success" data-toggle="modal" data-target="#installModal">
+                                <i class="fas fa-download"></i> ดูวิธีการติดตั้ง
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-info" data-toggle="modal" data-target="#signUpModal">
+                                <i class="fas fa-user-check"></i> ดูวิธีการสมัคร
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <hr>
 
-                <div class="step text-center">
-                    <div class="step-icon"><i class="fas fa-store-alt"></i></div>
-                    <h5 class="step-title">ขั้นตอนที่ 1: เลือกสถานีของคุณ</h5>
-                    <div class="form-group text-left mt-3">
-                        <select id="stationSelect" class="form-control" required>
-                            <option value="">-- กรุณาเลือกสถานี --</option>
-                        </select>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h5>ลงทะเบียนในระบบ</h5>
+                        <p class="text-muted">เลือกสถานีของคุณ จากนั้นกดปุ่ม "Log in with Telegram" ที่จะปรากฏขึ้น</p>
+                        <div class="form-group mb-0">
+                            <select id="stationSelect" class="form-control" required>
+                                <option value="">-- กรุณาเลือกสถานี --</option>
+                            </select>
+                        </div>
+                        <div id="telegram-login-container" class="mt-3">
+                            </div>
                     </div>
-                </div>
-
-                <div class="step text-center">
-                    <div class="step-icon"><i class="fab fa-telegram-plane"></i></div>
-                    <h5 class="step-title">ขั้นตอนที่ 2: กดปุ่มเพื่อลงทะเบียน</h5>
-                    <p id="prompt-login" class="text-danger">กรุณาเลือกสถานีก่อน</p>
-                    <div id="telegram-login-container" class="mt-2"></div>
                 </div>
 
             </div>
         </div>
     </div>
 
+    <div class="modal fade" id="installModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-download"></i> วิธีการติดตั้ง Telegram</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex align-items-center"><i class="fas fa-mobile-alt"></i> เปิด App Store (iOS) หรือ Google Play (Android)</li>
+                        <li class="list-group-item d-flex align-items-center"><i class="fas fa-search"></i> ค้นหาคำว่า "Telegram"</li>
+                        <li class="list-group-item d-flex align-items-center"><i class="fas fa-cloud-download-alt"></i> กดปุ่ม "ติดตั้ง" หรือ "Get"</li>
+                    </ul>
+                    <div class="text-center mt-3">
+                        <a href="https://apps.apple.com/app/telegram-messenger/id686449807" target="_blank" class="btn btn-dark"><i class="fab fa-apple"></i> App Store</a>
+                        <a href="https://play.google.com/store/apps/details?id=org.telegram.messenger" target="_blank" class="btn btn-success"><i class="fab fa-google-play"></i> Google Play</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="signUpModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-check"></i> วิธีการสมัครสมาชิก Telegram</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex align-items-center"><i class="fas fa-play-circle"></i> เปิดแอป Telegram แล้วกด "Start Messaging"</li>
+                        <li class="list-group-item d-flex align-items-center"><i class="fas fa-phone"></i> ใส่เบอร์โทรศัพท์ของคุณ แล้วกด "Next"</li>
+                        <li class="list-group-item d-flex align-items-center"><i class="fas fa-sms"></i> นำรหัส OTP ที่ได้รับทาง SMS มากรอกเพื่อยืนยัน</li>
+                        <li class="list-group-item d-flex align-items-center"><i class="fas fa-user-edit"></i> ตั้งชื่อและนามสกุล (สามารถใส่รูปโปรไฟล์ได้)</li>
+                        <li class="list-group-item d-flex align-items-center"><i class="fas fa-check-circle"></i> สมัครสมาชิกเรียบร้อย!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
     <script>
         const REGISTRATION_API_URL = "https://script.google.com/macros/s/AKfycbyG3JTW_phh5kN_QcO3UmGkPNR9flkhk63RA6g3MVINU4_FL81xtvOBIA7CzzCpkTiI/exec"; // <--- URL จากโปรเจกต์ลงทะเบียน
         const BOT_USERNAME = "MKtimearlert_BOT"; // <--- Username ของบอท (ไม่มี @)
 
+        // โค้ด Javascript ส่วนที่เหลือเหมือนเดิมทุกประการ
         const stationSelect = document.getElementById('stationSelect');
         const loginContainer = document.getElementById('telegram-login-container');
-        const promptLogin = document.getElementById('prompt-login');
 
-        // 1. ดึงรายชื่อสถานีมาใส่ใน Dropdown
         document.addEventListener("DOMContentLoaded", () => {
             fetch(REGISTRATION_API_URL + "?action=getStations")
                 .then(response => response.json())
@@ -75,22 +128,16 @@
                         const option = new Option(station, station);
                         stationSelect.add(option);
                     });
-                })
-                .catch(error => {
-                    promptLogin.textContent = "ไม่สามารถโหลดรายชื่อสถานีได้";
-                    console.error('Error fetching stations:', error);
                 });
         });
 
-        // 2. เมื่อผู้ใช้เลือกสถานี ให้สร้างปุ่ม Login
         stationSelect.addEventListener('change', () => {
             const selectedStation = stationSelect.value;
-            loginContainer.innerHTML = ''; // ล้างปุ่มเก่า
+            loginContainer.innerHTML = '';
+            loginContainer.style.display = 'none';
 
             if (selectedStation) {
-                promptLogin.style.display = 'none'; // ซ่อนข้อความเตือน
-                loginContainer.style.display = 'block'; // แสดงพื้นที่สำหรับปุ่ม
-
+                loginContainer.style.display = 'block';
                 const redirectUrl = `${REGISTRATION_API_URL}?action=register&station=${encodeURIComponent(selectedStation)}`;
 
                 const script = document.createElement('script');
@@ -101,9 +148,6 @@
                 script.setAttribute('data-auth-url', redirectUrl);
                 script.setAttribute('data-request-access', 'write');
                 loginContainer.appendChild(script);
-            } else {
-                promptLogin.style.display = 'block'; // แสดงข้อความเตือนอีกครั้ง
-                loginContainer.style.display = 'none'; // ซ่อนพื้นที่ปุ่ม
             }
         });
     </script>
