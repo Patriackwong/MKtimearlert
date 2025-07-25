@@ -7,39 +7,66 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        body { background-color: #f4f7f6; }
-        .container { max-width: 500px; margin: 50px auto; text-align: center; }
-        .card { border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        body { background-color: #f8f9fa; }
+        .container { max-width: 550px; margin: 40px auto; }
+        .card { border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border: none; }
+        .card-header { background: linear-gradient(45deg, #28a745, #218838); color: white; border-top-left-radius: 15px; border-top-right-radius: 15px; text-align: center; padding: 1.5rem; }
         .card-body { padding: 2rem; }
+        .step { margin-bottom: 2rem; }
+        .step-icon { font-size: 2rem; color: #28a745; margin-bottom: 0.5rem; }
+        .step-title { font-weight: bold; }
+        .download-buttons .btn { margin: 5px; }
+        #telegram-login-container { display: none; } /* ซ่อนปุ่ม Login ไว้ก่อน */
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-user-plus"></i> ลงทะเบียนรับการแจ้งเตือน</h2>
+            </div>
             <div class="card-body">
-                <i class="fas fa-user-plus fa-3x text-success mb-3"></i>
-                <h3>ลงทะเบียนรับการแจ้งเตือน</h3>
-                <p class="text-muted">กรุณาเลือกสถานีและเข้าสู่ระบบด้วย Telegram เพื่อบันทึก Chat ID ของท่าน</p>
-
-                <div class="form-group text-left mt-4">
-                    <label for="stationSelect"><strong>เลือกสถานีของคุณ</strong></label>
-                    <select id="stationSelect" class="form-control" required>
-                        <option value="">-- กรุณาเลือกสถานี --</option>
-                    </select>
+                
+                <div class="text-center mb-4">
+                    <p class="text-muted">หากยังไม่มีแอป Telegram สามารถดาวน์โหลดได้ที่นี่</p>
+                    <div class="download-buttons">
+                        <a href="https://apps.apple.com/app/telegram-messenger/id686449807" target="_blank" class="btn btn-outline-dark"><i class="fab fa-apple"></i> App Store</a>
+                        <a href="https://play.google.com/store/apps/details?id=org.telegram.messenger" target="_blank" class="btn btn-outline-success"><i class="fab fa-google-play"></i> Google Play</a>
+                    </div>
                 </div>
 
-                <div id="telegram-login-container" class="mt-4"></div>
+                <hr>
+
+                <div class="step text-center">
+                    <div class="step-icon"><i class="fas fa-store-alt"></i></div>
+                    <h5 class="step-title">ขั้นตอนที่ 1: เลือกสถานีของคุณ</h5>
+                    <div class="form-group text-left mt-3">
+                        <select id="stationSelect" class="form-control" required>
+                            <option value="">-- กรุณาเลือกสถานี --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="step text-center">
+                    <div class="step-icon"><i class="fab fa-telegram-plane"></i></div>
+                    <h5 class="step-title">ขั้นตอนที่ 2: กดปุ่มเพื่อลงทะเบียน</h5>
+                    <p id="prompt-login" class="text-danger">กรุณาเลือกสถานีก่อน</p>
+                    <div id="telegram-login-container" class="mt-2"></div>
+                </div>
+
             </div>
         </div>
     </div>
 
     <script>
-        const REGISTRATION_API_URL = "https://script.google.com/macros/s/AKfycbyG3JTW_phh5kN_QcO3UmGkPNR9flkhk63RA6g3MVINU4_FL81xtvOBIA7CzzCpkTiI/exec"; // <--- URL จากโปรเจกต์ที่ 2
-        const BOT_USERNAME = "MKtimearlert_BOT"; // <--- Username ของบอท (ไม่มี @)
+        const REGISTRATION_API_URL = "YOUR_REGISTRATION_WEB_APP_URL"; // <--- URL จากโปรเจกต์ลงทะเบียน
+        const BOT_USERNAME = "YOUR_BOT_USERNAME"; // <--- Username ของบอท (ไม่มี @)
 
         const stationSelect = document.getElementById('stationSelect');
         const loginContainer = document.getElementById('telegram-login-container');
+        const promptLogin = document.getElementById('prompt-login');
 
+        // 1. ดึงรายชื่อสถานีมาใส่ใน Dropdown
         document.addEventListener("DOMContentLoaded", () => {
             fetch(REGISTRATION_API_URL + "?action=getStations")
                 .then(response => response.json())
@@ -48,14 +75,22 @@
                         const option = new Option(station, station);
                         stationSelect.add(option);
                     });
+                })
+                .catch(error => {
+                    promptLogin.textContent = "ไม่สามารถโหลดรายชื่อสถานีได้";
+                    console.error('Error fetching stations:', error);
                 });
         });
 
+        // 2. เมื่อผู้ใช้เลือกสถานี ให้สร้างปุ่ม Login
         stationSelect.addEventListener('change', () => {
             const selectedStation = stationSelect.value;
-            loginContainer.innerHTML = '';
+            loginContainer.innerHTML = ''; // ล้างปุ่มเก่า
 
             if (selectedStation) {
+                promptLogin.style.display = 'none'; // ซ่อนข้อความเตือน
+                loginContainer.style.display = 'block'; // แสดงพื้นที่สำหรับปุ่ม
+
                 const redirectUrl = `${REGISTRATION_API_URL}?action=register&station=${encodeURIComponent(selectedStation)}`;
 
                 const script = document.createElement('script');
@@ -66,6 +101,9 @@
                 script.setAttribute('data-auth-url', redirectUrl);
                 script.setAttribute('data-request-access', 'write');
                 loginContainer.appendChild(script);
+            } else {
+                promptLogin.style.display = 'block'; // แสดงข้อความเตือนอีกครั้ง
+                loginContainer.style.display = 'none'; // ซ่อนพื้นที่ปุ่ม
             }
         });
     </script>
